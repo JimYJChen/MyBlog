@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= blog %></title>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var username = document.getElementById("name");
+            var password = document.getElementById("pasword");
+            var sbmbtn = document.getElementById("sbmbtn");
+            var regbtn = document.getElementById("regbtn");
+            //alert(username + password);
+            sbmbtn.onclick = function() {
+                $.ajax({
+                    url: "/login",
+                    data: { user: username.value, password: password.value },
+                    success: function (str) {
+                        let jason = eval(str);
+                        if (jason.ok) {
+                            alert('successful');
+                        } else {
+                            alert('failed     ' + jason.msg);
+                        }
+                    },
+                    error: function(){
+                        alert('net word unavailable');
+                    }
+                });
+            };
+            regbtn.onclick =  function(){
+              $.ajax({
+                url:"/regist",
+                data:{ user: username.value, password: password.value },
+                success:  (str)=> {
+                    let jason = eval(str);
+                    if (jason.ok) {
+                        alert('successful');
+                    } else {
+                        alert('failed     ' + jason.msg);
+                    }
+                },
+                error: function() {
+                    alert('net work unavailable');
+                }
+
+              });
+            };
+        };
+    </script>
+
+  </head>
+  <body>
+        <div>First Name:  <input type="text" name="first_name" id="name"> </div><br>
+
+        <div>Password :   <input type="text" name="password" id="pasword"></div>  <br>
+        <input type="submit" value="Submit" id="sbmbtn"></input>  <input type="submit" value="registe" id="regbtn"></input>
+</body>
+</html>
