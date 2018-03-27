@@ -37,16 +37,22 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="routes\enterance.js" />
-    <Compile Include="routes\LogIn.js">
+    <Compile Include="routes\post.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="routes\mainPage.js">
+    <Compile Include="routes\signin.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="routes\regist.js">
+    <Compile Include="routes\mainRouter.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="routes\users.js" />
+    <Compile Include="routes\signout.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="routes\signup.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="routes\comments.js" />
     <Content Include="package.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\stylesheets\main.css" />
@@ -56,7 +62,7 @@
     <Content Include="views\components\nav.ejs" />
     <Content Include="views\components\notification.ejs" />
     <Content Include="views\components\post-content.ejs" />
-    <Content Include="views\error.ejs">
+    <Content Include="views\404.ejs">
       <SubType>Code</SubType>
     </Content>
     <Content Include="views\footer.ejs" />

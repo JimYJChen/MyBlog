@@ -2,15 +2,20 @@
 var debug = require('debug');
 var express = require('express');
 var path = require('path');
+const pkg = require('./package');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const config = require('config-lite')(__dirname);
 
-var routes = require('./routes/enterance');
-var users = require('./routes/users');
-var login = require('./routes/login');
-var regist = require('./routes/regist');
+//var routes = require('./routes/enterance');
+//var users = require('./routes/users');
+//var login = require('./routes/login');
+//var regist = require('./routes/regist');
+
+var rounters = require('./routes/mainRouter');
 
 var app = express();
 
@@ -33,40 +38,50 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.get('/users', users);
-app.get('/login', login);
-app.get('/regist', regist);
+app.locals.blog = {
+    title: pkg.name,
+    description: pkg.description
+};
+app.locals.db = {
+    dbPath: config.mongodb
+};
 
+
+//app.use('/', routes);
+//app.get('/users', users);
+//app.get('/login', login);
+//app.get('/regist', regist);
+rounters(app);
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
+//app.use(function (req, res, next) {
+//    var err = new Error('Not Found');
+//    err.status = 404;
+//    next(err);
+//});
 
-// error handlers
+//// error handlers
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            blog: blog
-        });
-    });
-}
+// //development error handler
+//// will print stacktrace
+//if (app.get('env') === 'development') {
+//    app.use(function (err, req, res, next) {
+//        res.status(err.status || 500);
+//        res.render('404', {
+//            blog: blog
+//        });
+//    });
+//}
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
+//app.use(function (err, req, res, next) {
+//    res.status(err.status || 500);
+//    res.render('404', {
+//        message: err.message,
+//        error: {}
+//    });
+//});
+
 app.set(port, port);
 
 //app.listen(port, function (post, hostname) {

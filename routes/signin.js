@@ -13,8 +13,8 @@ router.use(cookieSession({
     maxAge: 60 * 60 * 1000
 }));
 
-router.use('/login', (req, res) => {
-    console.log()
+router.use('/', (req, res) => {
+    //console.log()
     var username = req.query['user'];
     var password = req.query['password'];
 
