@@ -2,9 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title><%= blog %></title>
+    <title><%= blog.title %></title>
 	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
-    <script type="text/javascript">
+  </head>
+  <script type="text/javascript">
         window.onload = function () {
             var username = document.getElementById("name");
             var password = document.getElementById("pasword");
@@ -13,7 +14,7 @@
             //alert(username + password);
             sbmbtn.onclick = function() {
                 $.ajax({
-                    url: "/login",
+                    url: "/signin",
                     data: { user: username.value, password: password.value },
                     success: function (str) {
                         let jason = eval(str);
@@ -30,7 +31,7 @@
             };
             regbtn.onclick =  function(){
               $.ajax({
-                url:"/regist",
+                url:"/signup",
                 data:{ user: username.value, password: password.value },
                 success:  (str)=> {
                     let jason = eval(str);
@@ -48,8 +49,6 @@
             };
         };
     </script>
-
-  </head>
   <body>
         <div>First Name:  <input type="text" name="first_name" id="name"> </div><br>
 

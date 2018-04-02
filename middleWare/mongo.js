@@ -6,7 +6,12 @@ const Schema = mongoose.Schema;
 const Objid = Schema.Types.ObjectId;
 
 exports.query = {//set the query interface
-    queryUserDetail: queryUserDetail
+    queryUserDetail: queryUserDetail,
+    queryArticleDetail : queryArticleDetail
+};
+
+exports.insert = {//set the insert interface
+    insertUserInfo: insertUserInfo
 };
 
 mongoose.connect(config.mongodb);
@@ -29,7 +34,7 @@ process.on('SIGINT', () => {
     });
 });
 
-const UserInfo = new Schema({
+const UserInfo = new Schema({//Schema of UserInfo
     name: {
         type: String,
         required: true,
@@ -46,21 +51,64 @@ const UserInfo = new Schema({
     }
 }, {
         connection: 'userinfo'
-    });//模型名称,
+    });
 
-function queryUserDetail (query, callback) {
-    mongoose.model("userinfo", UserInfo, "userinfo").findOne(query, (err,cond)=> {
+function queryUserDetail(query, callback) {
+    mongoose.model("userinfo", UserInfo, "userinfo").findOne(query, (err, doc) => {
+            if (err) {
+                return callback(err);
+            } else {
+                return callback(err, doc);
+            }
+    });        //findOne(query, (err, doc));
+};
+function insertUserInfo(docs, callback) {
+    mongoose.model("userinfo", UserInfo, "userinfo").create(docs, (err,res) => {
+        if (err) {
+            return callback(err);
+        } else {
+            return callback(err, res);
+        }
+    });
+};
+
+const ArticleDetail = new Schema({//Schema of ArticleDetail
+    ArticleName: {
+        type: String,
+        required: true,
+        ObjectId: true,
+        _id: false,
+    },
+    ArticleID: {
+        type: String,
+        required: true,
+    },
+    ArticleContent: {
+        type: String,
+        required: true
+    },
+    Author: {
+        type: String,
+        required: true
+    },
+    createTime: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+        connection: 'ArticleBlog'
+    });
+
+function queryArticleDetail(query, callback) {
+    mongoose.model("ArticleBlog", ArticleDetail, "ArticleBlog").find(query, (err, cond) => {
         if (err) {
             return callback(err);
         } else {
             return callback(err, cond);
         }
     });
-};
 
-
-
-
+}
 
 
 

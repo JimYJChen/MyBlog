@@ -73,6 +73,10 @@
     <Content Include="views\layout.ejs">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="views\post.ejs" />
+    <Content Include="views\showTheMainPage.ejs">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\signin.ejs" />
     <Content Include="views\signup.ejs" />
   </ItemGroup>
