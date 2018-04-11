@@ -36,6 +36,12 @@
     <Compile Include="middleWare\mongo.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="middleWare\solution.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="middleWare\Testing.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\enterance.js" />
     <Compile Include="routes\post.js">
       <SubType>Code</SubType>
@@ -53,6 +59,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="routes\comments.js" />
+    <Content Include="middleWare\testWebPage.html" />
     <Content Include="package.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\stylesheets\main.css" />

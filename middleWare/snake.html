@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+        * {
+            margin: 0;
+        }
+
+        #canvas {
+            background: rgb(206, 206, 206);
+            display: block;
+            margin: auto;
+            margin-bottom: 30px;
+        }
+
+        #div1 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        #score {
+            font-size: 30px;
+            text-align: center;
+            color: red;
+        }
+
+        #box {
+            text-align: center;
+            position: relative;
+        }
+
+        div {
+            margin: auto;
+        }
+
+        #pop {
+            width: 250px;
+            height: 150px;
+            background: white;
+            border-radius: 20px;
+            position: absolute;
+            top: 200px;
+            left: 0;
+            right: 0;
+            display: none;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: red;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #latticeSelect,
+        #speedSelect,
+        #startBtn {
+            width: 70px;
+            height: 40px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        #startBtn {
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="div1">得分</div>
+    <div id="score">0</div>
+    <canvas id="canvas"></canvas>
+    <div id="box">
+        <select id="latticeSelect">
+            <option value="300">15*15</option>
+            <option value="400">20*20</option>
+            <option value="500">25*25</option>
+        </select>
+        <select id="speedSelect">
+            <option value="300">速度一</option>
+            <option value="200">速度二</option>
+            <option value="100">速度三</option>
+        </select>
+        <button type="button" id="startBtn">开始</button>
+    </div>
+    <div id="pop">
+        <h1>游戏结束</h1>
+        <h2 id="newBegin">再来一局</h2>
+    </div>
+    <audio id="audio" src="1.mp3"></audio>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    var score = document.getElementById("score");
+    var speedSelect = document.getElementById("speedSelect");
+    var startBtn = document.getElementById("startBtn");
+    var newBegin = document.getElementById("newBegin");
+    var pop = document.getElementById("pop");
+    var audio = document.getElementById("audio");
+    //定义得分
+    var num = 0;
+    //定义速度
+    var speed = 300;
+    canvas.width = 300;
+    canvas.height = 300;
+    //选择格子多少
+    latticeSelect.onchange = function() {
+        canvas.width = this.value;
+        canvas.height = this.value;
+        lattice();
+    }
+
+    //选择速度
+    speedSelect.onchange = function() {
+        // if (speedSelect.value == "速度一") {
+        //     speed = 300;
+        // }
+        // if (speedSelect.value == "速度二") {
+        //     speed = 200;
+        // }
+        // if (speedSelect.value == "速度三") {
+        //     speed = 100;
+        // }
+        speed = this.value;
+    }
+
+    //再来一局的点击事件
+    newBegin.onclick = function() {
+        pop.style.display = "none";
+        //关闭input标签的禁用属性
+        latticeSelect.disabled = false;
+        speedSelect.disabled = false;
+        startBtn.disabled = false;
+        // latticeSelect.removeAttribute("disabled", "disabled");
+        // speedSelect.removeAttribute("disabled", "disabled");
+        // startBtn.removeAttribute("disabled", "disabled");
+        //清理画布
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        //再来一局  使num=0，得分为0
+        num = 0;
+        score.innerText = 0;
+        //select里面的第一个option默认选中
+        // latticeSelect.options[0].selected = true;
+        // speedSelect.options[0].selected = true;
+        //速度和格子多少初始化
+        // speed = 300;
+        // canvas.width = 300;
+        // canvas.height = 300;
+        lattice();
+    }
+
+    //******************************************方块
+    //此方块可以构成蛇、食物、游戏背景格子
+    function random(min, max) {
+        return parseInt(Math.random() * (max - min) + min);
+    }
+
+    function Rect(x, y, w, h, color) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+        this.color = color;
+    }
+    Rect.prototype.draw = function() {
+        context.beginPath();
+        context.rect(this.x, this.y, this.width, this.height);
+        context.fillStyle = this.color;
+        context.fill();
+        context.stroke();
+    }
+
+    //******************************************方块
+
+    //*******************************************画格子
+    function lattice() {
+        for (var i = 0; i < canvas.width / 20; i++) {
+            for (var j = 0; j < canvas.width / 20; j++) {
+                var rect = new Rect(20 * j, 20 * i, 20, 20, "rgb(206,206,206)");
+                rect.draw();
+            }
+        }
+    }
+    lattice();
+    //*******************************************画格子
+
+    //******************************************蛇类
+    function Snake() {
+        //定义一个数组存放组成蛇的方块数组
+        var snakeArray = [];
+        //画四个方块，拼成蛇
+        for (var i = 0; i < 4; i++) {
+            var rect = new Rect(i * 20, 20, 20, 20, "green");
+            //之所以用splice（往前加）而不是用push（往后加），是为了让蛇头出现在数组第一个位置
+            snakeArray.splice(0, 0, rect);
+        }
+        //数组第一个作为蛇头
+        var head = snakeArray[0];
+        head.color = "red";
+        //将蛇头和组成蛇的数组定义成属性
+        this.head = snakeArray[0];
+        this.snakeArray = snakeArray;
+        //蛇移动的初始化速度
+        this.head.speedX = 20;
+        this.head.speedY = 0;
+    }
+    Snake.prototype.draw = function() {
+        for (var i = 0; i < this.snakeArray.length; i++) {
+            this.snakeArray[i].draw();
+        }
+    }
+    Snake.prototype.move = function() {
+        //绘制一个方块，与蛇头位置重叠，然后蛇头移动将其添加到蛇头后面一位，并且删除蛇尾部一个方块
+        var rect = new Rect(this.head.x, this.head.y, 20, 20, "green");
+        this.head.x += this.head.speedX;
+        this.head.y += this.head.speedY;
+        this.snakeArray.splice(1, 0, rect);
+        if (!isEat()) {
+            this.snakeArray.pop();
+        } else {
+            //蛇吃了食物，则继续创建食物，并且分数+1
+            food = new Food();
+            num++;
+            score.innerText = num;
+        }
+
+    }
+
+    var snake = new Snake();
+    // snake.draw();
+    //******************************************蛇类
+
+    //******************************************食物
+    function Food() {
+        //通过flag标示判断随机生成的食物是否在蛇身上，如果在，在重新随机食物出现的位置
+        var flag = false;
+        while (!flag) {
+            flag = true;
+            this.x = random(0, canvas.width / 20 - 1) * 20;
+            this.y = random(0, canvas.width / 20 - 1) * 20;
+            for (var i = 0; i < snake.snakeArray.length; i++) {
+                if (snake.snakeArray[i].x == this.x && snake.snakeArray[i].y == this.y) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        this.width = 20;
+        this.height = 20;
+        this.color = "yellow";
+    }
+    Food.prototype.draw = function() {
+        // context.beginPath();
+        // context.rect(this.x, this.y, this.width, this.height);
+        // context.fillStyle = this.color;
+        // context.fill();
+        var food = new Rect(this.x, this.y, this.width, this.height, this.color);
+        food.draw();
+    }
+
+    //******************************************食物
+
+    var food = new Food();
+    //判断是否吃到食物，即蛇头和食物位置重叠
+    function isEat() {
+        if (snake.head.x == food.x && snake.head.y == food.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //检测死亡  即蛇头出界或者蛇头撞到蛇身
+    function death() {
+        if (snake.head.x + 20 > canvas.width || snake.head.x < 0 || snake.head.y + 20 > canvas.height || snake.head.y < 0) {
+            clearInterval(timer);
+            pop.style.display = "block";
+            audio.pause();
+        }
+        for (var i = 1; i < snake.snakeArray.length; i++) {
+            if (snake.snakeArray[i].x == snake.head.x && snake.snakeArray[i].y == snake.head.y) {
+                clearInterval(timer);
+                pop.style.display = "block";
+                audio.pause();
+            }
+        }
+    }
+
+    var timer;
+    //开始的点击事件
+    startBtn.onclick = function() {
+        audio.play();
+        audio.loop = "loop";
+        //点击开始后绘制蛇
+        snake = new Snake();
+        snake.draw();
+        //执行动画
+        timer = setInterval(function() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            lattice();
+            food.draw();
+            snake.draw();
+            snake.move();
+            death();
+        }, speed);
+        //开启input标签的禁用属性
+        // latticeSelect.disabled=true;
+        // speedSelect.disabled=true;
+        // button.disabled=true;
+        latticeSelect.setAttribute("disabled", "disabled");
+        speedSelect.setAttribute("disabled", "disabled");
+        startBtn.setAttribute("disabled", "disabled");
+    }
+
+    //键盘按下事件
+    window.onkeydown = function(event) {
+        event = event || window.event;
+        switch (event.keyCode) {
+            case 38:
+                if (snake.head.speedY != 20) {
+                    snake.head.speedX = 0;
+                    snake.head.speedY = -20;
+                }
+                break;
+            case 40:
+                if (snake.head.speedY != -20) {
+                    snake.head.speedX = 0;
+                    snake.head.speedY = 20;
+                }
+                break;
+            case 37:
+                if (snake.head.speedX != 20) {
+                    snake.head.speedX = -20;
+                    snake.head.speedY = 0;
+                }
+                break;
+            case 39:
+                if (snake.head.speedX != -20) {
+                    snake.head.speedX = 20;
+                    snake.head.speedY = 0;
+                }
+                break;
+        }
+    }
+</script>
+
+</html>

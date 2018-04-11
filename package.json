@@ -10,6 +10,7 @@
     "name": "Administrator"
   },
   "dependencies": {
+    "async": "^2.6.0",
     "body-parser": "^1.15.0",
     "config-lite": "^2.1.0",
     "connect-flash": "^0.1.1",
